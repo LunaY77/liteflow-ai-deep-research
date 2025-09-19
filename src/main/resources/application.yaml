@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: @spring.profiles.active@
+  application:
+    name: liteflow-ai-deep-research
+
+liteflow:
+  ai:
+    enable: true
+    base-packages: com.lunay.deepresearch.cmp
+    dashscope:
+      apikey: ${deepresearch.dashscope.apikey}
