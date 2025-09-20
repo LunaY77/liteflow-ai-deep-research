@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE flow PUBLIC "liteflow" "liteflow.dtd">
+<flow>
+    <!-- Deep Research Workflow Chain -->
+    <chain name="deepResearchChain">
+        THEN(
+            clarifyAgent,
+            IF(clarifyRouter, response, THEN(
+                researchBriefAgent,
+                supervisorChain
+        ))
+        )
+    </chain>
+
+    <chain name="supervisorChain">
+        THEN(
+            supervisorPromptBuildNode,
+            supervisorAgent,
+            WHILE(supervisorToolNode).DO(
+                supervisorAgent
+            )
+        )
+    </chain>
+</flow>

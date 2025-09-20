@@ -3,10 +3,35 @@ spring:
     active: @spring.profiles.active@
   application:
     name: liteflow-ai-deep-research
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/deep_research?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${deepresearch.mysql.username:root}
+    password: ${deepresearch.mysql.password:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 liteflow:
   ai:
     enable: true
-    base-packages: com.lunay.deepresearch.cmp
+    base-packages: com.lunay.deepresearch.node
     dashscope:
-      apikey: ${deepresearch.dashscope.apikey}
+      apikey: ${deepresearch.dashscope.apikey:your-dashscope-api-key-here}
+  rule-source: flow.el.xml
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    com.lunay.deepresearch: INFO
+    com.yomahub.liteflow: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

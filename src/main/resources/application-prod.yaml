@@ -1,3 +1,10 @@
 deepresearch:
+  mysql:
+    username: root
+    password: 123456
   dashscope:
     apikey: your-api-key
+  tavliy:
+    apiKey: your-api-key
+  maxResearchIterations: 5
+  maxConcurrentResearchTasks: 5
