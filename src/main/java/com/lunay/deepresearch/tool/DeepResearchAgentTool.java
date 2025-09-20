@@ -1,7 +1,9 @@
 package com.lunay.deepresearch.tool;
 
+import com.lunay.deepresearch.util.TavilyApiClient;
 import com.yomahub.liteflow.ai.engine.tool.annotation.Tool;
 import com.yomahub.liteflow.ai.engine.tool.annotation.ToolParam;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +13,10 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
+@RequiredArgsConstructor
 public class DeepResearchAgentTool {
+
+    private final TavilyApiClient tavilyApiClient;
 
     @Tool(name = "thinkTool", value = """
             研究进展和决策制定的战略反思工具。
@@ -36,12 +41,17 @@ public class DeepResearchAgentTool {
     }
 
     @Tool(name = "conductResearchTool", value = "调用此工具对特定主题进行研究的")
-    public String conductResearchTool(@ToolParam("要研究的主题。应该是单一主题，并且应该被详细描述（至少一段话）。") String researchTopic) {
-        return researchTopic;
+    public void conductResearchTool(@ToolParam("要研究的主题。应该是单一主题，并且应该被详细描述（至少一段话）。") String researchTopic) {
+        // 空实现
     }
 
     @Tool(name = "researchCompleteTool", value = "调用此工具表示研究已经完成，可以生成最终报告")
     public void researchCompleteTool() {
         // 空实现
+    }
+
+    @Tool(name = "webSearchTool", value = {"一个为提供全面、准确、可信的搜索结果而优化的搜索引擎", "当您需要回答关于时事的问题时，它会非常有用。"})
+    public String webSearchTool(@ToolParam("搜索查询，应该是一个简短的句子或短语") String query) {
+        return "...";
     }
 }

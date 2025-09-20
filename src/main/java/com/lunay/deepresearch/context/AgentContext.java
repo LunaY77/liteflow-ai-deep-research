@@ -59,6 +59,15 @@ public class AgentContext extends ChatContext {
     }
 
     /**
+     * 添加多条 Supervisor 消息
+     *
+     * @param messages 消息列表
+     */
+    public void addSupervisorMessage(List<Message> messages) {
+        this.supervisorMessages.addAll(messages);
+    }
+
+    /**
      * 获取最后一条 AssistantMessage 类型的 Supervisor 消息
      *
      * @return 最后一条 AssistantMessage 类型的 Supervisor 消息，如果没有则报错

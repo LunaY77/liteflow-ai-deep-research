@@ -16,6 +16,6 @@ public class ClarifyRouterNode extends NodeBooleanComponent {
     @Override
     public boolean processBoolean() {
         AgentContext context = this.getContextBean(AgentContext.class);
-        return context.getClarifyDto().isNeedClarify();
+        return !context.getClarifyDto().isNeedClarify();
     }
 }

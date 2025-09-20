@@ -1,4 +1,4 @@
-package com.lunay.deepresearch.node;
+package com.lunay.deepresearch.node.supervisor;
 
 import com.lunay.deepresearch.context.AgentContext;
 import com.lunay.deepresearch.domain.dto.ResearchQuestionDto;
@@ -36,5 +36,6 @@ public class SupervisorPromptBuildNode extends NodeComponent {
         UserMessage userMessage = new UserMessage(researchBrief);
 
         context.setSupervisorMessages(List.of(systemMessage, userMessage));
+        context.setResearchIterations(0);
     }
 }

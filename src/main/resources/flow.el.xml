@@ -5,10 +5,12 @@
     <chain name="deepResearchChain">
         THEN(
             clarifyAgent,
-            IF(clarifyRouter, response, THEN(
+            IF(clarifyRouter, THEN(
                 researchBriefAgent,
-                supervisorChain
-        ))
+                supervisorChain,
+                reportAgent
+            )),
+            response
         )
     </chain>
 
@@ -18,6 +20,16 @@
             supervisorAgent,
             WHILE(supervisorToolNode).DO(
                 supervisorAgent
+            )
+        )
+    </chain>
+
+    <chain name="researchChain">
+        THEN(
+            researcherPromptBuildNode,
+            researcherAgent,
+            WHILE(researcherToolNode).DO(
+                researcherAgent
             )
         )
     </chain>
