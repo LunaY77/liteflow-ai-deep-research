@@ -16,12 +16,14 @@ import com.yomahub.liteflow.ai.util.TriState;
 @AIComponent(
         nodeId = "supervisorAgent",
         nodeName = "supervisorAgentNode",
-        provider = "dashscope",
-        apiUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        model = "qwen-plus",
+        provider = "openai",
+        apiUrl = "https://ark.cn-beijing.volces.com/api/v3",
+        model = "deepseek-r1-250528",
         enableThinking = TriState.TRUE,
         // 关闭自动工具调用，在 SupervisorToolNode 中手动调用工具
-        autoToolCallEnabled = TriState.FALSE
+        autoToolCallEnabled = TriState.FALSE,
+        readTimeout = "10m",
+        connectTimeout = "10m"
 )
 @AIChat(
         // 这里使用 上下文对象(List<Message>) 构建提示词，启用后将关闭 systemPrompt 和 userPrompt

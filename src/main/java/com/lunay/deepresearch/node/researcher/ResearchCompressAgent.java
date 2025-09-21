@@ -1,22 +1,22 @@
-package com.lunay.deepresearch.node;
+package com.lunay.deepresearch.node.researcher;
 
 import com.yomahub.liteflow.ai.annotation.AIComponent;
 import com.yomahub.liteflow.ai.annotation.model.io.AIOutput;
+import com.yomahub.liteflow.ai.annotation.model.io.OutputField;
 import com.yomahub.liteflow.ai.annotation.model.node.AIChat;
 import com.yomahub.liteflow.ai.engine.interact.transport.TransportType;
 import com.yomahub.liteflow.ai.engine.model.output.ResponseType;
 import com.yomahub.liteflow.ai.util.TriState;
 
 /**
- * 研究简报 Agent
- * 当 ClarifyAgentNode 确认问题清晰后，生成一个简要的研究简报，描述研究的背景、目的和意义
+ * TODO
  *
  * @author 苍镜月
  */
 
 @AIComponent(
-        nodeId = "researchBriefAgent",
-        nodeName = "ResearchBriefAgentNode",
+        nodeId = "researchCompressAgent",
+        nodeName = "researchCompressAgentNode",
         provider = "openai",
         apiUrl = "https://ark.cn-beijing.volces.com/api/v3",
         model = "deepseek-v3-1-250821",
@@ -25,15 +25,16 @@ import com.yomahub.liteflow.ai.util.TriState;
         connectTimeout = "10m"
 )
 @AIChat(
-        systemPrompt = "classpath:deepresearch/research_brief_system_prompt.txt",
-        userPrompt = "{{question}}",
+        history = "researcherMessages",
         streaming = false,
         transportType = TransportType.HTTP
 )
 @AIOutput(
-        responseType = ResponseType.JSON,
-        typeName = "com.lunay.deepresearch.domain.dto.ResearchQuestionDto",
-        methodExpress = "setResearchQuestionDto"
+        // 如果输出格式为 TEXT，那么最终输出对象为 AssistantMessage, 将其 content 字段映射到 ResearchContext 的 compressedResult 字段
+        responseType = ResponseType.TEXT,
+        mapping = {
+                @OutputField(sourceField = "content", methodExpress = "setCompressedResult")
+        }
 )
-public interface ResearchBriefAgent {
+public interface ResearchCompressAgent {
 }

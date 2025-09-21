@@ -8,15 +8,14 @@ import com.yomahub.liteflow.ai.engine.model.output.ResponseType;
 import com.yomahub.liteflow.ai.util.TriState;
 
 /**
- * 研究简报 Agent
- * 当 ClarifyAgentNode 确认问题清晰后，生成一个简要的研究简报，描述研究的背景、目的和意义
+ * WebSummary Agent
  *
  * @author 苍镜月
  */
 
 @AIComponent(
-        nodeId = "researchBriefAgent",
-        nodeName = "ResearchBriefAgentNode",
+        nodeId = "webSummaryAgent",
+        nodeName = "webSummaryAgentNode",
         provider = "openai",
         apiUrl = "https://ark.cn-beijing.volces.com/api/v3",
         model = "deepseek-v3-1-250821",
@@ -25,15 +24,14 @@ import com.yomahub.liteflow.ai.util.TriState;
         connectTimeout = "10m"
 )
 @AIChat(
-        systemPrompt = "classpath:deepresearch/research_brief_system_prompt.txt",
-        userPrompt = "{{question}}",
+        userPrompt = "classpath:deepresearch/summarize_webpage_prompt.txt",
         streaming = false,
         transportType = TransportType.HTTP
 )
 @AIOutput(
         responseType = ResponseType.JSON,
-        typeName = "com.lunay.deepresearch.domain.dto.ResearchQuestionDto",
-        methodExpress = "setResearchQuestionDto"
+        typeName = "com.lunay.deepresearch.domain.dto.WebSummaryDto",
+        methodExpress = "setWebSummaryDto"
 )
-public interface ResearchBriefAgent {
+public interface WebSummaryAgent {
 }

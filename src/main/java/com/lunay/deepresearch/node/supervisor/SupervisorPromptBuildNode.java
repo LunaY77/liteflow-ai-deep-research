@@ -11,8 +11,6 @@ import com.yomahub.liteflow.ai.parse.prompt.resource.PromptResource;
 import com.yomahub.liteflow.annotation.LiteflowComponent;
 import com.yomahub.liteflow.core.NodeComponent;
 
-import java.util.List;
-
 /**
  * SupervisorAgent 提示词构建
  *
@@ -35,7 +33,8 @@ public class SupervisorPromptBuildNode extends NodeComponent {
         SystemMessage systemMessage = new SystemMessage(systemPrompt);
         UserMessage userMessage = new UserMessage(researchBrief);
 
-        context.setSupervisorMessages(List.of(systemMessage, userMessage));
+        context.addSupervisorMessage(systemMessage);
+        context.addSupervisorMessage(userMessage);
         context.setResearchIterations(0);
     }
 }

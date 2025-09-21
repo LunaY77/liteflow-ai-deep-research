@@ -1,8 +1,3 @@
-These are the messages that have been exchanged so far from the user asking for the report:
-<Messages>
-{{messages}}
-</Messages>
-
 Today's date is {{date}}.
 
 Assess whether you need to ask a clarifying question, or if the user has already provided enough information for you to start research.
@@ -21,12 +16,12 @@ Respond in valid JSON format with these exact keys:
 "verification": "<verification message that we will start research>"
 
 If you need to ask a clarifying question, return:
-"need_clarification": true,
+"needClarify": true,
 "question": "<your clarifying question>",
 "verification": ""
 
 If you do not need to ask a clarifying question, return:
-"need_clarification": false,
+"needClarify": false,
 "question": "",
 "verification": "<acknowledgement message that you will now start research based on the provided information>"
 

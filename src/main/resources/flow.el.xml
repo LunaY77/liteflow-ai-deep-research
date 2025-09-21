@@ -30,7 +30,12 @@
             researcherAgent,
             WHILE(researcherToolNode).DO(
                 researcherAgent
-            )
+            ),
+            researchCompressAgent
         )
+    </chain>
+
+    <chain name="webSummaryAgent">
+        THEN(webSummaryAgent)
     </chain>
 </flow>

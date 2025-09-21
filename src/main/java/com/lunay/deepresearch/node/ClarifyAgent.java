@@ -18,10 +18,12 @@ import com.yomahub.liteflow.ai.util.TriState;
 @AIComponent(
         nodeId = "clarifyAgent",
         nodeName = "ClarifyAgentNode",
-        provider = "dashscope",
-        apiUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        model = "qwen-flash",
-        enableThinking = TriState.FALSE
+        provider = "openai",
+        apiUrl = "https://ark.cn-beijing.volces.com/api/v3",
+        model = "deepseek-v3-1-250821",
+        enableThinking = TriState.FALSE,
+        readTimeout = "10m",
+        connectTimeout = "10m"
 )
 @AIChat(
         systemPrompt = "classpath:deepresearch/clarify_system_prompt.txt",
@@ -32,7 +34,7 @@ import com.yomahub.liteflow.ai.util.TriState;
 @AIOutput(
         responseType = ResponseType.JSON,
         typeName = "com.lunay.deepresearch.domain.dto.ClarifyDto",
-        methodExpress = "clarifyDto",
+        methodExpress = "setClarifyDto",
         mapping = {
                 // 将 question 字段映射到 finalReport 字段，目的是如果需要用户澄清问题，那么直接结束流程，输出最终报告
                 @OutputField(sourceField = "question", methodExpress = "setFinalReport")

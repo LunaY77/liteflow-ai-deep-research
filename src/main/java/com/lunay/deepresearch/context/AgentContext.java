@@ -10,8 +10,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DeepResearch Agent 上下文
@@ -26,6 +28,8 @@ import java.util.List;
 public class AgentContext extends ChatContext {
 
     // ========== start ==========
+    private String question;
+
     private Date date;
 
     private Integer maxResearchIterations;
@@ -42,9 +46,11 @@ public class AgentContext extends ChatContext {
     // ========== researchBriefAgent ==========
 
     // ========== supervisorChain ==========
-    private List<Message> supervisorMessages;
+    private List<Message> supervisorMessages = new ArrayList<>();
 
     private Integer researchIterations;
+
+    private String notes;
     // ========== supervisorChain ==========
 
     private String finalReport;
@@ -63,7 +69,7 @@ public class AgentContext extends ChatContext {
      *
      * @param messages 消息列表
      */
-    public void addSupervisorMessage(List<Message> messages) {
+    public void addSupervisorMessages(List<Message> messages) {
         this.supervisorMessages.addAll(messages);
     }
 
@@ -83,6 +89,9 @@ public class AgentContext extends ChatContext {
     }
 
     public void incrementResearchIterations() {
+        if (Objects.isNull(this.researchIterations)) {
+            this.researchIterations = 0;
+        }
         this.researchIterations++;
     }
 }

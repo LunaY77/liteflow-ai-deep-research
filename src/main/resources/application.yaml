@@ -4,18 +4,18 @@ spring:
   application:
     name: liteflow-ai-deep-research
   
-  datasource:
-    url: jdbc:mysql://localhost:3306/deep_research?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: ${deepresearch.mysql.username:root}
-    password: ${deepresearch.mysql.password:123456}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/deep_research?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#    username: ${deepresearch.mysql.username:root}
+#    password: ${deepresearch.mysql.password:123456}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 
 liteflow:
   ai:
     enable: true
     base-packages: com.lunay.deepresearch.node
-    dashscope:
-      apikey: ${deepresearch.dashscope.apikey:your-dashscope-api-key-here}
+    openai:
+      apikey: ${deepresearch.openai.apikey:your-openai-api-key-here}
   rule-source: flow.el.xml
 
 mybatis-plus:

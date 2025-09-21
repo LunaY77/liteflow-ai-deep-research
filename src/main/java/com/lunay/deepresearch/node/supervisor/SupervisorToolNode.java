@@ -3,20 +3,20 @@ package com.lunay.deepresearch.node.supervisor;
 import cn.hutool.core.collection.CollectionUtil;
 import com.lunay.deepresearch.context.AgentContext;
 import com.lunay.deepresearch.context.ResearchContext;
+import com.lunay.deepresearch.tool.ToolExecutor;
 import com.yomahub.liteflow.ai.engine.model.chat.message.AssistantMessage;
 import com.yomahub.liteflow.ai.engine.model.chat.message.Message;
 import com.yomahub.liteflow.ai.engine.model.chat.message.ToolMessage;
 import com.yomahub.liteflow.ai.engine.tool.ToolCall;
-import com.yomahub.liteflow.ai.engine.tool.ToolCallBack;
-import com.yomahub.liteflow.ai.engine.tool.registry.ToolRegistry;
 import com.yomahub.liteflow.annotation.LiteflowComponent;
 import com.yomahub.liteflow.core.FlowExecutor;
 import com.yomahub.liteflow.core.NodeBooleanComponent;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  */
 
 @LiteflowComponent("supervisorToolNode")
+@Slf4j
 public class SupervisorToolNode extends NodeBooleanComponent {
 
     @Resource
@@ -39,6 +40,7 @@ public class SupervisorToolNode extends NodeBooleanComponent {
         Integer researchIteration = context.getResearchIterations();
         // 获取最后一条 AssistantMessage 类型的 Supervisor 消息, 即 SupervisorAgent 的最新回复
         AssistantMessage lastMessage = context.getLastSupervisorAssistantMessage();
+        log.info("进入 SupervisorAgent 工具执行节点, 当前是第 {} 轮研究", researchIteration);
 
         // 判断是否达到结束条件
         // 1. 超过最大迭代次数 2. 没有更多工具可用 3. 使用了 researchCompleteTool 工具
@@ -48,10 +50,17 @@ public class SupervisorToolNode extends NodeBooleanComponent {
                 .stream()
                 .anyMatch(toolCall -> "researchCompleteTool".equals(toolCall.getName()));
         if (exceededMaxIterations || noMoreTools || researchCompleted) {
+            log.info("达到结束条件，结束研究。");
+            context.setNotes(context.getSupervisorMessages().stream()
+                    .filter(message -> message instanceof ToolMessage)
+                    .map(Message::getContent)
+                    .collect(Collectors.joining("\n"))
+            );
             return false;
         }
 
         // 2. 执行工具
+        log.info("执行工具，共有 {} 个工具调用", lastMessage.getToolCalls().size());
         List<Message> toolMessages = new ArrayList<>();
 
         // 执行 thinkTool 工具
@@ -59,7 +68,9 @@ public class SupervisorToolNode extends NodeBooleanComponent {
                 .stream()
                 .filter(toolCall -> "thinkTool".equals(toolCall.getName()))
                 .forEach(toolCall -> {
-                    ToolMessage toolMessage = executeTool(toolCall, context.getToolRegistry());
+                    ToolMessage toolMessage = ToolExecutor.executeTool(toolCall, context.getToolRegistry());
+                    log.info("thinkTool 工具调用结果: {}", toolMessage.getContent().length() > 200 ?
+                            toolMessage.getContent().substring(0, 200) + "..." : toolMessage.getContent());
                     toolMessages.add(toolMessage);
                 });
 
@@ -77,6 +88,11 @@ public class SupervisorToolNode extends NodeBooleanComponent {
             List<ToolCall> overflowResearchCalls = researchCalls.stream()
                     .skip(context.getMaxConcurrentResearchTasks())
                     .toList();
+
+            log.info("conductResearchTool 工具调用，当前支持最大并发研究任务数: {}, 本轮执行 {} 个研究任务，超出 {} 个研究任务",
+                    context.getMaxConcurrentResearchTasks(),
+                    limitedResearchCalls.size(),
+                    overflowResearchCalls.size());
 
             // 执行范围内的研究任务
             CompletableFuture<List<ResearchContext>> researchFutures = limitedResearchCalls.stream()
@@ -106,12 +122,10 @@ public class SupervisorToolNode extends NodeBooleanComponent {
                         toolCall.getName()
                 ));
             });
-
-            // TODO
         }
 
         // 3. 将工具执行结果添加到上下文中，供下一轮对话使用
-        context.addSupervisorMessage(toolMessages);
+        context.addSupervisorMessages(toolMessages);
         context.incrementResearchIterations();
         return true;
     }
@@ -124,30 +138,11 @@ public class SupervisorToolNode extends NodeBooleanComponent {
      */
     private ResearchContext conductResearch(ToolCall toolCall) {
         ResearchContext researchContext = new ResearchContext();
+        researchContext.setDate(new Date());
         researchContext.setToolCallId(toolCall.getId());
         researchContext.setToolCallName(toolCall.getName());
         researchContext.setResearchTopic(toolCall.getArguments().toString());
         flowExecutor.execute2Resp("researchChain", null, researchContext);
         return researchContext;
-    }
-
-    /**
-     * 执行工具
-     *
-     * @param toolCall     工具调用信息
-     * @param toolRegistry 工具注册表
-     * @return 工具调用结果消息
-     */
-    private ToolMessage executeTool(ToolCall toolCall, ToolRegistry toolRegistry) {
-        // 找到对应的工具回调
-        ToolCallBack toolCallBack = toolRegistry.getAllTools()
-                .stream()
-                .filter(tool -> Objects.equals(tool.getName(), toolCall.getName()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("工具未注册: " + toolCall.getName()));
-        // 调用工具
-        String toolResult = toolCallBack.call(toolCall.getArguments().toString());
-        // 返回工具调用结果
-        return new ToolMessage(toolResult, toolCall.getId(), toolCall.getName());
     }
 }

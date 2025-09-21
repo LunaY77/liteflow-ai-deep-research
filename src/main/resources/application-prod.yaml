@@ -2,7 +2,7 @@ deepresearch:
   mysql:
     username: root
     password: 123456
-  dashscope:
+  openai:
     apikey: your-api-key
   tavliy:
     apiKey: your-api-key
